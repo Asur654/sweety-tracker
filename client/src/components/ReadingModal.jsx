@@ -105,7 +105,7 @@ export function ReadingModal({ isOpen, onClose, onSaved, initialData = null, def
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form noValidate onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
             <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200/80 flex items-start space-x-2 text-rose-700 text-sm">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-500" />
