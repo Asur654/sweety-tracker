@@ -6,7 +6,7 @@
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Recharts](https://img.shields.io/badge/Recharts-2.x-22c55e)](https://recharts.org/)
-[![Tests](https://img.shields.io/badge/Tests-46%20Passed-brightgreen)](https://jestjs.io/)
+[![Tests](https://img.shields.io/badge/Tests-54%20Passed-brightgreen)](https://jestjs.io/)
 
 Sweety is a full-stack web application designed for diabetes patients to record up to 4 blood glucose readings a day across meal slots (`Morning (fasting)`, `After breakfast`, `After lunch`, `After dinner`) and view daily, month-to-date, and previous-month statistical reports with interactive charts.
 
@@ -47,11 +47,12 @@ Built for the **Kenpath Junior Full Stack Developer Assessment**.
 - **Visual Trends (Bonus):** Interactive line charts built with `Recharts` showing glucose fluctuations against clinical reference thresholds (target < 140 mg/dl).
 
 ### 4. Bonus Features Implemented
-- ✅ **Pagination:** `GET /api/readings?page=1&limit=20` with page metadata.
+- ✅ **Doctor Role & Care Portal:** Distinct doctor account type (`role: 'doctor'`) with patient assignment (`/api/doctor/patients/assign`) and dedicated clinical dashboard to monitor assigned patients' daily, month-to-date, and monthly glucose trends.
+- ✅ **Pagination:** `GET /api/readings?page=1&limit=20` with page metadata and frontend Next/Previous controls.
 - ✅ **Recharts Visualization:** Trend line chart with responsive container, customized tooltips, and target reference lines.
 - ✅ **Docker Compose:** Complete `docker-compose.yml` for automated PostgreSQL 16 setup.
-- ✅ **Automated Test Suites:** 42 backend integration tests (Jest + Supertest) and 4 frontend tests (React Testing Library + Vitest) = **46 total tests passing**.
-- ✅ **Demo Seed Script:** Realistic seed script populating today's readings, Month-to-date data, and complete previous month data for immediate testing.
+- ✅ **Automated Test Suites:** 50 backend integration tests (Jest + Supertest) and 4 frontend tests (React Testing Library + Vitest) = **54 total tests passing**.
+- ✅ **Demo Seed Script:** Realistic seed script populating demo patient readings, demo doctor account, and automatic patient assignment.
 
 ---
 
@@ -143,8 +144,12 @@ npm run seed
 ```
 
 **Demo Credentials:**
-- **Email:** `demo@sweety.com`
-- **Password:** `password123`
+- **Patient Account:**
+  - **Email:** `demo@sweety.com`
+  - **Password:** `password123`
+- **Doctor Account:**
+  - **Email:** `doctor@sweety.com`
+  - **Password:** `password123` (Assigned to monitor `Demo Patient`)
 
 ---
 
@@ -213,6 +218,14 @@ Covers:
 | `GET` | `/api/reports/monthly?date=YYYY-MM-DD` | Whole previous month stats | Yes |
 | `GET` | `/api/reports/summary?date=YYYY-MM-DD` | Combined summary for dashboard | Yes |
 
+### Doctor Portal (`/api/doctor`)
+| Method | Endpoint | Description | Auth Required |
+|---|---|---|:---:|
+| `GET` | `/api/doctor/patients` | List patients assigned to doctor | Yes (Doctor) |
+| `POST` | `/api/doctor/patients/assign` | Assign patient to doctor by email | Yes (Doctor) |
+| `GET` | `/api/doctor/patients/:patientId/reports/summary` | View patient's full report summary | Yes (Doctor) |
+| `GET` | `/api/doctor/patients/:patientId/readings` | View patient's readings history | Yes (Doctor) |
+
 ---
 
 ## 📝 Notes & Engineering Decisions
@@ -229,5 +242,4 @@ Covers:
 ### What Would Be Improved With More Time
 1. **Redis Caching:** Cache report calculations (`/api/reports/summary`) with a Redis key per user and date, automatically invalidated via a cache eviction hook whenever a reading is created, updated, or deleted.
 2. **BullMQ Background Reminders:** Implement a daily cron queue with BullMQ and Redis that inspects patients who have logged fewer than 4 readings by 8:00 PM and queues a notification or email reminder.
-3. **Doctor / Caregiver Role:** Add a `role` enum (`'patient' | 'doctor'`) and an assignment table allowing physicians to view assigned patient report dashboards, trends, and export CSV/PDF clinical summaries.
-4. **PWA & Offline Logging:** Add Service Worker caching and IndexedDB queueing so patients can log readings without internet connectivity and sync automatically when reconnected.
+3. **PWA & Offline Logging:** Add Service Worker caching and IndexedDB queueing so patients can log readings without internet connectivity and sync automatically when reconnected.

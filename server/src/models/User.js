@@ -52,6 +52,16 @@ User.init(
           msg: 'Password must be at least 6 characters long'
         }
       }
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: 'patient',
+      validate: {
+        isIn: {
+          args: [['patient', 'doctor']],
+          msg: 'Role must be either patient or doctor'
+        }
+      }
     }
   },
   {

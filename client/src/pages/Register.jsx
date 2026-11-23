@@ -6,6 +6,7 @@ import { Activity, Mail, Lock, User, AlertCircle, ArrowRight } from 'lucide-reac
 export function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('patient'); // 'patient' | 'doctor'
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,8 +30,8 @@ export function Register() {
     setLoading(true);
 
     try {
-      await register(name, email, password);
-      navigate('/');
+      await register(name, email, password, role);
+      navigate(role === 'doctor' ? '/doctor' : '/');
     } catch (err) {
       setError(
         err.response?.data?.error || 'Registration failed. Please try again.'
@@ -62,6 +63,36 @@ export function Register() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                Account Type
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRole('patient')}
+                  className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all ${
+                    role === 'patient'
+                      ? 'bg-emerald-50 border-emerald-500 text-emerald-800 ring-1 ring-emerald-500'
+                      : 'bg-white border-slate-200 text-slate-600'
+                  }`}
+                >
+                  Patient (Self-Tracking)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('doctor')}
+                  className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all ${
+                    role === 'doctor'
+                      ? 'bg-blue-50 border-blue-500 text-blue-800 ring-1 ring-blue-500'
+                      : 'bg-white border-slate-200 text-slate-600'
+                  }`}
+                >
+                  Doctor (Physician Portal)
+                </button>
+              </div>
+            </div>
+
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
                 Full Name

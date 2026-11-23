@@ -7,7 +7,7 @@ const { generateToken } = require('../utils/jwt');
  */
 async function register(req, res, next) {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role = 'patient' } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -17,11 +17,15 @@ async function register(req, res, next) {
       });
     }
 
+    // Validate role
+    const assignedRole = role === 'doctor' ? 'doctor' : 'patient';
+
     // Create user (password is automatically hashed via Sequelize hook)
     const user = await User.create({
       name,
       email,
-      password
+      password,
+      role: assignedRole
     });
 
     const token = generateToken(user);
@@ -32,7 +36,8 @@ async function register(req, res, next) {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {
@@ -72,7 +77,8 @@ async function login(req, res, next) {
       user: {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role
       }
     });
   } catch (error) {
@@ -90,6 +96,7 @@ async function getMe(req, res) {
       id: req.user.id,
       name: req.user.name,
       email: req.user.email,
+      role: req.user.role,
       createdAt: req.user.createdAt
     }
   });

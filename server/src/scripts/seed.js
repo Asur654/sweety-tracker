@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { sequelize, User, Reading, ALLOWED_SLOTS } = require('../models');
+const { sequelize, User, Reading, DoctorPatient, ALLOWED_SLOTS } = require('../models');
 
 async function seedDatabase() {
   console.log('🌱 Starting Sweety Demo Database Seed...\n');
@@ -11,7 +11,7 @@ async function seedDatabase() {
     await sequelize.sync();
     console.log('✓ Synced database models');
 
-    // 1. Create or Find Demo User
+    // 1. Create or Find Demo Patient
     const demoEmail = 'demo@sweety.com';
     let user = await User.findOne({ where: { email: demoEmail } });
 
@@ -24,10 +24,36 @@ async function seedDatabase() {
       user = await User.create({
         name: 'Demo Patient',
         email: demoEmail,
-        password: 'password123'
+        password: 'password123',
+        role: 'patient'
       });
       console.log(`✓ Created demo user: ${demoEmail} (password: password123)`);
     }
+
+    // 2. Create or Find Demo Doctor
+    const doctorEmail = 'doctor@sweety.com';
+    let doctor = await User.findOne({ where: { email: doctorEmail } });
+
+    if (!doctor) {
+      doctor = await User.create({
+        name: 'Dr. Gregory House',
+        email: doctorEmail,
+        password: 'password123',
+        role: 'doctor'
+      });
+      console.log(`✓ Created demo doctor: ${doctorEmail} (password: password123)`);
+    } else {
+      console.log(`ℹ Found existing demo doctor: ${doctorEmail}`);
+    }
+
+    // Assign Demo Patient to Doctor
+    await DoctorPatient.findOrCreate({
+      where: {
+        doctorId: doctor.id,
+        patientId: user.id
+      }
+    });
+    console.log(`✓ Assigned Demo Patient (${demoEmail}) to Doctor (${doctorEmail})`);
 
     // 2. Generate Sample Readings
     const today = new Date();
@@ -134,8 +160,11 @@ async function seedDatabase() {
 
     console.log('═══════════════════════════════════════════════');
     console.log('🎉 SEED COMPLETED SUCCESSFULLY!');
-    console.log('👉 Demo Credentials:');
+    console.log('👉 Patient Credentials:');
     console.log('   Email:    demo@sweety.com');
+    console.log('   Password: password123');
+    console.log('👉 Doctor Credentials:');
+    console.log('   Email:    doctor@sweety.com');
     console.log('   Password: password123');
     console.log('═══════════════════════════════════════════════\n');
 
