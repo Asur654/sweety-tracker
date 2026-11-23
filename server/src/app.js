@@ -13,7 +13,10 @@ if (process.env.NODE_ENV !== 'test') {
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
+const readingRoutes = require('./routes/readingRoutes');
+
 app.use('/api/auth', authRoutes);
+app.use('/api/readings', readingRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
