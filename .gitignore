@@ -22,6 +22,11 @@ dist/
 build/
 coverage/
 
+# Database files
+*.sqlite
+*.sqlite-journal
+*.db
+
 # Editor directories and files
 .idea/
 .vscode/

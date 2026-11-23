@@ -48,6 +48,14 @@ app.use((req, res, next) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Unhandled Server Error:', err);
+
+  // Friendly error for database connection failures
+  if (err.name === 'SequelizeConnectionRefusedError') {
+    return res.status(503).json({
+      error: 'Database connection failed. PostgreSQL is not running. Please start Docker (npm run docker:up) or set USE_SQLITE=true in server/.env.'
+    });
+  }
+
   res.status(err.status || 500).json({
     error: err.message || 'Internal Server Error'
   });

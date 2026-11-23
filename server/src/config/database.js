@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const path = require('path');
 require('dotenv').config();
 
 let sequelize;
@@ -9,6 +10,14 @@ if (process.env.NODE_ENV === 'test') {
     dialect: 'sqlite',
     storage: ':memory:',
     logging: false
+  });
+} else if (process.env.USE_SQLITE === 'true') {
+  // Zero-config SQLite persistent file database for development without Docker/PostgreSQL
+  const dbPath = path.resolve(__dirname, '../../../sweety_dev.sqlite');
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: dbPath,
+    logging: process.env.DB_LOGGING === 'true' ? console.log : false
   });
 } else if (process.env.DATABASE_URL) {
   // Connect via full database connection URL (e.g., Neon, Supabase, Render, local)
@@ -26,7 +35,7 @@ if (process.env.NODE_ENV === 'test') {
       : {}
   });
 } else {
-  // Connect using individual credentials
+  // Connect using individual credentials (PostgreSQL)
   sequelize = new Sequelize(
     process.env.DB_NAME || 'sweety_db',
     process.env.DB_USER || 'postgres',
